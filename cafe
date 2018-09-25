@@ -1,4 +1,4 @@
-#!/usr/bin/perl 
+#!/usr/bin/env perl
 
 use File::Copy;
 use Bio::SeqIO;
@@ -40,9 +40,9 @@ else {
 	unless (-e $f) {
 		print "Sequence file does not exist\n";
 		exit;
-	} 
+	}
 	$nce=1;
-	#Check if sequence file is in fasta format	
+	#Check if sequence file is in fasta format
 	open(F,$f);
 	$line= <F>;
 	if ($line!~/^>/){
@@ -60,7 +60,7 @@ else {
 }
 
 
-#Check only ATCG nucs are present 
+#Check only ATCG nucs are present
 @nucs= ('A','T','C','G');
 @g=split("",$dna);
 foreach(@g){
@@ -71,7 +71,7 @@ open (OUT, ">$name\_CAFE_1");
 $m=join("",@g);
 print OUT "$m";
 $lenm=length($m);
-print "Genome loaded\nLength of genome is $lenm bp\n" if ($verb==1); 
+print "Genome loaded\nLength of genome is $lenm bp\n" if ($verb==1);
 
 #If annotation file is provided
 
@@ -82,7 +82,7 @@ if (!defined$annotation){
 
 		if (scalar@ARGV < 1){
 		print "Annotation file does not exist\n";
-		exit; 
+		exit;
 		}
 
 
@@ -93,8 +93,8 @@ if (!defined$annotation){
 		unless (-e $f1) {
 			print "Annotation file does not exist\n";
 			exit;
-		} 
-	
+		}
+
 		open(F1,$f1);
 	}
 
@@ -114,7 +114,7 @@ if (!defined$annotation){
 		$arr2[$b++]=$end;
 		$arr3[$c++]=$C[8];
 	}
-	
+
 	@identifiers=split('\t',$D[2]);
 
 	if (defined $identifiers[0]&& defined $identifiers[1] && defined $identifiers[8]){
@@ -150,7 +150,7 @@ else{
 	print "Predicting genes using prodigal...\n" if ($verb==1);
 	#print "$infile\t$in_filename\t$name\n";
 	system("prodigal -a $name\_CAFE.faa -f sco -i $in_filename -o $name\_CAFE_sco_file.txt -q"); #bartonella =.fna file
-	
+
 	$sco="$name\_CAFE_sco_file.txt";
 	open (S, $sco);
 	$a=0;$b=0;$c=0;
@@ -165,7 +165,7 @@ else{
 	}
 	print "Identified $a genes\n" if ($verb==1);
 	print "Scanning genome for presence of genomic island specific marker genes...\n" if ($verb==1);
-	
+
 	#Run hmmer for annnotating genes
 	system("hmmscan -o $name\_CAFE_stdout_out.txt --tblout $name\_CAFE_table.txt cafe_database_table $name\_CAFE.faa");
 	$f="$name\_CAFE_table.txt";
@@ -176,12 +176,12 @@ else{
 	while (<F>){
 		chomp $_;
 		next if $_=~/#/;
-		@line=split('\s+',$_);	
+		@line=split('\s+',$_);
 		push(@id1,$line[2]);
 		push (@evalue,$line[4]);
 		$annot=join(' ', @line[18..$#line]);
 		push(@func1, $annot);
-	
+
 	}
 
 	#Get all markers with BLAST evalue < 0.01
@@ -195,7 +195,7 @@ else{
 
 			$hash{$id}=$func unless !defined $idd[1];
 		}
-	
+
 		#print "$id\t$func[$i]\n";
 	}
 
@@ -210,7 +210,7 @@ else{
 	for ($i=0;$i<$a;$i++){
 		$num=$i+1;
 		$length=int(($end[$i]-$start[$i])/3);
-	
+
 		if (exists($hash{$num})){
 			print OUT "$start[$i]..$end[$i]\t$strand[$i]\t$length\t-\t-\t-\t-\t-\t$hash{$num}\ transposase\n";
 			$arr1[$i]=$start[$i];$arr2[$i]=$end[$i];$arr3[$i]=$hash{$num};
@@ -220,14 +220,14 @@ else{
 			print OUT "$start[$i]..$end[$i]\t$strand[$i]\t$length\t-\t-\t-\t-\t-\t-\n";
 			$arr1[$i]=$start[$i];$arr2[$i]=$end[$i];$arr3[$i]="-";
 		}
-	
+
 	}
-	
+
 	#open (PTTOUT, ">$name\_CAFE_gene_coord");
 	$gene_counter=0;
 
 	for($i=0;$i<$a;$i++){
-	
+
 	#print PTTOUT "$arr3[$i]\t$arr1[$i]\t$arr2[$i]\n";
 	$st=$arr1[$i];$en=$arr2[$i];$fn=$arr3[$i];
 	$gene_start[$gene_counter]=$st;$gene_end[$gene_counter]=$en;$gene_func[$gene_counter]=$fn;
@@ -252,7 +252,7 @@ if ($phylo==1){
 	$blastf="$name\_blast_output";
 	open(BL, $blastf);
 	open (BLOUT,">$name\_phy");
-	
+
 	$bf=0;
 	while (<BL>){
 		chomp;
@@ -286,16 +286,16 @@ if ($phylo==1){
 		$phcount++;
 		$phcum_count++;
 		$pi++;
-	
-		
+
+
 	}
 
 	for ($i=0; $i<$bf; $i++){
 		if ($blsub[$i]=~m/\[(.*)\]/){ #get blast subject names
 			$blastname[$i]=$1;
-			
+
 		}
-	
+
 	}
 
 	for ($i=0; $i<$bf; $i++){
@@ -310,7 +310,7 @@ if ($phylo==1){
 		#print "$i $blast_strain[$i]\n";
 		#print "$blast_genus[$i]\t$blast_sp[$i]\t$blast_strain[$i]\n";
 	}
-	
+
 	@uniq_queryacc=uniq(@queryacc);
 
 	$last_element=$uniq_queryacc[-1];
@@ -320,10 +320,10 @@ if ($phylo==1){
 	$spcount=0;
 	@all_strains='';
 	$phv=0;
-	
+
 	for ($k=0; $k<scalar(@uniq_queryacc); $k++){
 		$cur_query=$uniq_queryacc[$k];
-	
+
 
 		$next_query=$uniq_queryacc[$k+1];
 		pop(@all_strains);
@@ -331,9 +331,9 @@ if ($phylo==1){
 		$end=$phash_cum{$cur_query};
 		#print "$start\t$end\t$input_genus\n";
 		for ($i=$start;$i<$end;$i++){
-			
+
 			if ($blast_genus[$i]=~m/$input_genus/i){
-				
+
 				if ($coverage[$i]>=70&&$identities[$i]>=70){ #if identities and coverage are greater than 70
 					$spcount+=1;
 					push(@all_strains,$blast_strain[$i]);
@@ -343,7 +343,7 @@ if ($phylo==1){
 		}
 		#print "@all_strains\n";
 		$actual_count=scalar(uniq(@all_strains)); #Do not count multiple times if query matches multiple genes in same genome/strain
-		
+
 		if (!defined $expect ) {$pc=1;}
 		else {$pc=$actual_count/$expect;}
 		if ($pc>=0.5){
@@ -354,11 +354,11 @@ if ($phylo==1){
 			$value=1;
 			$phyvalue[$phv++]=1;
 		} # atypical phyletic pattern
-		
+
 		if (!defined $expect ) {
 			print BLOUT "$cur_query\t0\t$actual_count\t$phash{$cur_query}\t$value\n";
 		}
-		
+
 		else {
 			print BLOUT "$cur_query\t$expect\t$actual_count\t$phash{$cur_query}\t$value\n";
 		}
@@ -383,15 +383,15 @@ if ($phylo==1){
 #If user has defined thresholds
 
 if (defined ($seg) && defined ($clus1) && defined ($clus2)){
-	#system("./cafe.out $name\_CAFE_1 $seg $clus1 $clus2 $verb"); 
+	system("./cafe.out $name\_CAFE_1 $seg $clus1 $clus2 $verb");
 }
 
 #Default thresholds
 
 else {
-	
-	#system("./cafe.out $name\_CAFE_1 0.8 0.99999 0.999 $verb");
-} 	
+
+	system("./cafe.out $name\_CAFE_1 0.8 0.99999 0.999 $verb");
+}
 
 #Parse segment and clustering output file. Combine contiguous segments with same cluster id.
 
@@ -433,9 +433,9 @@ if($counter==0){
 $k=0;
 
 for ($i=0; $i<$scc; $i++){
-	if ($i==$scc-1){		
+	if ($i==$scc-1){
 		$cst=$sc_arr1[$i];$cend=$sc_arr2[$i];$cclu=$sc_arr3[$i];
-		$cond_arr1[$k]=$cst;$cond_arr2[$k]=$cend;$cond_arr3[$k]=$cclu;		
+		$cond_arr1[$k]=$cst;$cond_arr2[$k]=$cend;$cond_arr3[$k]=$cclu;
 		$k++;
 	}
 	else{
@@ -448,17 +448,17 @@ for ($i=0; $i<$scc; $i++){
 				$k++;
 			}
 		}
-		 
+
 		else{
 			#print F1 "$sc_arr1[$i]\t$sc_arr2[$i]\t$sc_arr3[$i]\n";
 			$cst=$sc_arr1[$i];$cend=$sc_arr2[$i];$cclu=$sc_arr3[$i];
-			$cond_arr1[$k]=$cst;$cond_arr2[$k]=$cend;$cond_arr3[$k]=$cclu;		
+			$cond_arr1[$k]=$cst;$cond_arr2[$k]=$cend;$cond_arr3[$k]=$cclu;
 			$k++;
 		}
 	}
-	
-}			
-		
+
+}
+
 #Calculate size of each cluster as a percentage of the length of genome
 #open(F3,">$name\_CAFE_clustersize");
 
@@ -480,9 +480,9 @@ for($i=0;$i<$k;$i++){
 	for($j=1;$j<($max+1);$j++){
 		if($cond_arr3[$i]==$j){
 			$size[$j]+=$cond_arr2[$i]-$cond_arr1[$i]+1;
-			
+
 		}
-	}			
+	}
 }
 
 for($j=1;$j<($max+1);$j++){
@@ -490,7 +490,7 @@ for($j=1;$j<($max+1);$j++){
 	$pc=$percent[$j];
 	$sort_hash{$pc}=$j;
 	#print F3 "$j $size[$j] $percent[$j]\n";
-	
+
 }
 
 $percent[0]=0;
@@ -519,20 +519,20 @@ for ($i=0;$i<$k;$i++){
 			$g_func[$gex_counter]=$gene_func[$l];$g_start[$gex_counter]=$gene_start[$l];$g_end[$gex_counter]=$gene_end[$l];$phylovalue[$gex_counter]=$phyvalue[$l];
 			$gex_counter+=1;
 		}
-		elsif($cond_arr1[$i]>=$gene_start[$l] && $gene_end[$l]>=$cond_arr1[$i] && $cond_arr2[$i]>=$gene_end[$l]){ 
+		elsif($cond_arr1[$i]>=$gene_start[$l] && $gene_end[$l]>=$cond_arr1[$i] && $cond_arr2[$i]>=$gene_end[$l]){
 			print PYOUT "$cond_arr3[$i]\t$cond_arr1[$i]\t$cond_arr2[$i]\t$gene_func[$l]\t$gene_start[$l]\t$gene_end[$l]\t$phyvalue[$l]\n";
 			$sc_clus[$gex_counter]=$cond_arr3[$i];$sc_start[$gex_counter]=$cond_arr1[$i];$sc_end[$gex_counter]=$cond_arr2[$i];
 			$g_func[$gex_counter]=$gene_func[$l];$g_start[$gex_counter]=$gene_start[$l];$g_end[$gex_counter]=$gene_end[$l];$phylovalue[$gex_counter]=$phyvalue[$l];
-			$gex_counter+=1;			
+			$gex_counter+=1;
 		}
-		elsif($cond_arr1[$i]<=$gene_start[$l] && $gene_start[$l]<=$cond_arr2[$i] && $cond_arr2[$i]<=$gene_end[$l]){ 
+		elsif($cond_arr1[$i]<=$gene_start[$l] && $gene_start[$l]<=$cond_arr2[$i] && $cond_arr2[$i]<=$gene_end[$l]){
 			print PYOUT "$cond_arr3[$i]\t$cond_arr1[$i]\t$cond_arr2[$i]\t$gene_func[$l]\t$gene_start[$l]\t$gene_end[$l]\t$phyvalue[$l]\n";
 			$sc_clus[$gex_counter]=$cond_arr3[$i];$sc_start[$gex_counter]=$cond_arr1[$i];$sc_end[$gex_counter]=$cond_arr2[$i];
 			$g_func[$gex_counter]=$gene_func[$l];$g_start[$gex_counter]=$gene_start[$l];$g_end[$gex_counter]=$gene_end[$l];$phylovalue[$gex_counter]=$phyvalue[$l];
 			$gex_counter+=1;
 		}
 	}
-		
+
 }
 
 for ($i=0;$i<$gex_counter;$i++){
@@ -547,10 +547,10 @@ foreach(@Dlib){ #for all words in library
 	$count=0;
 	$_[$count2]=0;
 	for($i=0;$i<$gex_counter;$i++){ #for all genes
-				
+
 		@splitarr7=split(/ /,$g_func[$i]);
 		foreach $splitarr7(@splitarr7){ #for each word in line
-		               
+
 			if($_=~m/$splitarr7/i){
 				if (length($_)==length($splitarr7)){
 					$count+=1;
@@ -558,9 +558,9 @@ foreach(@Dlib){ #for all words in library
 					$total_count+=1;
 				}
 			}
-									
-		} 
-					      
+
+		}
+
 		@splitarr7='';
 	}
 
@@ -581,33 +581,33 @@ for($j=1;$j<$max+1;$j++){#for all cluster ids
 	##print"$j\t" if ($verb==1);
 	$count2 =0;
 	foreach(@Dlib){ #for all words in library
-		
+
 		$lib_word_counter+=1;
 		$count=0;
 		$count1=0;
- 		$count1[$j]=0;	
+ 		$count1[$j]=0;
   		for($i=0;$i<$gex_counter;$i++){ #for all genes
 			if($sc_clus[$i]==$j){ #if cluster id  match
 				#$g_func[$i]=~s/,//g;
 				@splitarr7=split(/ /,$g_func[$i]);
-		
+
 				foreach $splitarr7(@splitarr7){ #for each word in line
-				
+
 					if($_=~m/$splitarr7/i){
 						if (length($_)==length($splitarr7)){
-							
+
 							$count+=1;
 							$count1[$j]+=1;
 						   }
 				   	}
-				} 
+				}
 			}
 			@splitarr7='';
 		}
 
 		$count2+=$count1[$j];
-		##print "$count1[$j]\t" if ($verb==1);	
-		
+		##print "$count1[$j]\t" if ($verb==1);
+
 	}
 
 	##print "$count2\n" if ($verb==1);
@@ -632,7 +632,7 @@ foreach$D2(@percent){
 	#print "$percent\t$D2\t$enrichment\t$j\n";
 	print FOUT1 "$j\t$D2\t$enrichment\n";
 	push (@fout, $D2);
-	
+
 	$enrich[$e_counter]=$enrichment;
 	$e_counter+=1;
 	$j+=1;
@@ -664,7 +664,7 @@ if($max1>=20){
 			}
 		#print "$cond_arr1[$i]\t$cond_arr2[$i]\t$cond_arr3[$i]\n";#print condensed array
 		}
-		
+
 	}
 	else{
 		print "Native cluster is cluster $j\n" if ($verb==1);
@@ -714,7 +714,7 @@ for($i=0;$i<scalar(@cond_arr1);$i++){
 				#$cfgi_end[$gic]=$cond_arr2[$i];
 				$gic+=1;
 				$lenn=$cond_arr2[$i]-$cond_arr1[$i]+1;
-				$cafe_f_gi_start[$cff]=$cond_arr1[$i];$cafe_f_gi_end[$cff]=$cond_arr2[$i];$cff+=1; 	
+				$cafe_f_gi_start[$cff]=$cond_arr1[$i];$cafe_f_gi_end[$cff]=$cond_arr2[$i];$cff+=1;
 				print OUTFILE "GI-$is_counter\t$cond_arr1[$i]\t$cond_arr2[$i]\t$lenn\n";
 			}
 		}
@@ -741,12 +741,12 @@ for ($i=0; $i< scalar(@fout); $i++){
 $clusno=max(@oriclusid); #total number of clusters
 
 #initialize to 0
-for ($j=1; $j<($clusno)+1;$j++){ 
+for ($j=1; $j<($clusno)+1;$j++){
 	$count_gene[$j]=0;
 	$count_aberrant[$j]=0;
 }
 
-for ($j=1; $j<($clusno)+1;$j++){ 
+for ($j=1; $j<($clusno)+1;$j++){
 	for ($i=0; $i<scalar(@phylovalue); $i++){
 		if ($sc_clus[$i]==$j){
 			$count_gene[$j]+=1;
@@ -760,14 +760,14 @@ for ($j=1; $j<($clusno)+1;$j++){
 @abb='';
 
 #Determine if a cluster is composed of genes with aberrant phyletic pattern
-for ($j=1; $j<($clusno+1);$j++){ 
+for ($j=1; $j<($clusno+1);$j++){
 	#print "$j\t$count_aberrant[$j]\t$count_gene[$j]\n";
 	if ($count_gene[$j]==0){$count_aberrant[$j]=1;$count_gene[$j]=1; }
-	if (($count_aberrant[$j]/$count_gene[$j])>=0.99){ 
+	if (($count_aberrant[$j]/$count_gene[$j])>=0.99){
 		$abb[$j]=1;
 	}
 	else {$abb[$j]=0;}
-	
+
 }
 
 #Determine native and alien clusters
@@ -778,13 +778,13 @@ for ($i=0; $i<scalar(@cond_arr3); $i++){
 		$cond_arr3[$i]=343434; #make largest cluster native
 	}
 	else{
-		
+
 		if ($enrich[$val-1]<1.5){ #Native if a cluster is not enriched in marker genes
-			
+
 			$cond_arr3[$i]=343434;#native
-			
+
 			if ($abb[$val]==1){ # if cluster has aberrant phyletic pattern
-			
+
 				#print "Aberrant only clusters are $val\n";
 				$cond_arr3[$i]=121212;#alien
 			}
@@ -792,13 +792,13 @@ for ($i=0; $i<scalar(@cond_arr3); $i++){
 
 		}
 		else{
-		
+
 			$cond_arr3[$i]=121212;#alien
-		
+
 		}
 	}
 
-	
+
 }
 
 $ncondcounter=0;
@@ -808,7 +808,7 @@ for ($i=0; $i< scalar(@cond_arr3); $i++){ #Need to condense ##Merge contiguous a
 		$nconds=$cond_arr1[$i];$nconde=$cond_arr2[$i];$ncondcl=$cond_arr3[$i];$noricl=$oriclusid[$i];
 		$nca1[$ncondcounter]=$nconds; $nca2[$ncondcounter]=$nconde; $nca3[$ncondcounter]=$ncondcl; $nca4[$ncondcounter]=$noricl;
 		$ncondcounter++;
-		
+
 	}
 	else{
 		if ($cond_arr3[$i]==$cond_arr3[$i+1]){
@@ -817,7 +817,7 @@ for ($i=0; $i< scalar(@cond_arr3); $i++){ #Need to condense ##Merge contiguous a
 				$nconds=$cond_arr1[$i];$nconde=$cond_arr2[$i];$ncondcl=$cond_arr3[$i];$noricl=$oriclusid[$i];
 				$nca1[$ncondcounter]=$nconds; $nca2[$ncondcounter]=$nconde; $nca3[$ncondcounter]=$ncondcl; $nca4[$ncondcounter]=$noricl;
 				$ncondcounter++;
-			
+
 			}
 		}
 		else{
@@ -831,22 +831,22 @@ for ($i=0; $i< scalar(@cond_arr3); $i++){ #Need to condense ##Merge contiguous a
 open (OUTFILE1, ">$name\_CAFE.txt");
 $nul=0;
 $cffm=0;
-#Identify islands from alien clusters	
+#Identify islands from alien clusters
 for ($i=0; $i< $ncondcounter; $i++){
 	#print COUT "$nca1[$i]\t $nca2[$i]\t$nca4[$i]\t$nca3[$i]\n";
-	
+
 	if ($nca3[$i]==121212){
 		if ($nca2[$i]-$nca1[$i]>=8000){
 			$nul+=1;
 			if ($nul==1){print OUTFILE1 "Genomic_island_id	Start	End	Length\n";}
 			$length=$nca2[$i]-$nca1[$i]+1;
 			$cgist=$nca1[$i]; $cgiend=$nca2[$i];
-			$cafe_gi_start[$cffm]=$cgist; $cafe_gi_end[$cffm]=$cgiend;$cffm+=1; 
+			$cafe_gi_start[$cffm]=$cgist; $cafe_gi_end[$cffm]=$cgiend;$cffm+=1;
 			print OUTFILE1 "GI-$nul\t$nca1[$i]\t$nca2[$i]\t$length\n";
 		}
 	}
 
-	
+
 }
 
 if($nul==0){
@@ -859,7 +859,7 @@ if($nul==0){
 if ($visual==1){
 	print "Preparing files for making visualizing genomic islands\n" if ($verb==1);
 	open (VOUT, ">$name\_CAFE_feature_table");
-	open (VOUTF, ">$name\_CAFE_full_feature_table");	
+	open (VOUTF, ">$name\_CAFE_full_feature_table");
 	print VOUT "seqname\tsource\tfeature\tstart\tend\tscore\tstrand\tframe\n";
 	print VOUTF "seqname\tsource\tfeature\tstart\tend\tscore\tstrand\tframe\n";
 	for ($i=0;$i<$cffm;$i++){
@@ -868,15 +868,15 @@ if ($visual==1){
 
 	for ($i=0;$i<$cff;$i++){
 		print VOUTF "gene$i\t.\tgene\t$cafe_f_gi_start[$i]\t$cafe_f_gi_end[$i]\t1\t.\t.\n";
-	}	
+	}
 
 
-	open(VISL, ">$name\_CAFE_label"); 
+	open(VISL, ">$name\_CAFE_label");
 	print VISL "gene\t1";
 	if ($verb==0){
 		system ("perl cgview_xml_builder.pl -sequence $in_filename -verbose s -genes $name\_CAFE_feature_table -title \"$name\" -labels_to_show $name\_CAFE_label -custom featureThickness=45 labelFontSize=45 -output $name\_CAFE_marker.xml");
 		system ("perl cgview_xml_builder.pl -sequence $in_filename -verbose s -genes $name\_CAFE_full_feature_table -title \"$name\" -labels_to_show $name\_CAFE_label -custom featureThickness=45 labelFontSize=45 -output $name\_CAFE_full.xml");
-		
+
 	}
 	else {
 		system ("perl cgview_xml_builder.pl -sequence $in_filename -genes $name\_CAFE_feature_table -title \"$name\" -labels_to_show $name\_CAFE_label -custom featureThickness=45 labelFontSize=45 -output $name\_CAFE_marker.xml");
@@ -887,19 +887,19 @@ if ($visual==1){
 	$ci=0;
 
 	#Edit XML file to include labels and color GIs
-	foreach $vers (@vers){ 
+	foreach $vers (@vers){
 		open(VISF, $vers);
 		@file=<VISF>;
 		$count=0;
-		open(VISF1,">$name\_CAFE1\_$ci.xml");	
-		
+		open(VISF1,">$name\_CAFE1\_$ci.xml");
+
 
 		foreach(@file){
 			if ($_=~m/showLabel/){
 				$count+=1;
 			}
-	
-		}		
+
+		}
 
 		foreach(@file){
 			if ($_=~m/showLabel/){
@@ -921,41 +921,41 @@ if ($visual==1){
 
 
 			print VISF1 "$_";
-		}				
+		}
 
 		$ci+=1;
 	}
 	system ("java -jar cgview.jar -i $name\_CAFE1_0.xml -o $name\_CAFE_marker.png > $name\_CAFE_CGViewout");
-	
-	
+
+
 }
 
 #system ("rm temp");
 
 if ($expert==0){
 	system ("rm $name\_CAFE_stdout_out.txt") if (defined$annotation);
-	system ("rm $name\_CAFE_1");	
-	system ("rm *\_CAFE.ptt"); 
+	system ("rm $name\_CAFE_1");
+	system ("rm *\_CAFE.ptt");
 	system ("rm *\_CAFE.faa");
-	system ("rm $name\_phy") if($phylo==1); 
-	system ("rm $name\_blast_output") if($phylo==1);	
+	system ("rm $name\_phy") if($phylo==1);
+	system ("rm $name\_blast_output") if($phylo==1);
 	system ("rm $name\_CAFE_extract_out");
-	system ("rm faa_database") if (defined$phylo);	
+	system ("rm faa_database") if (defined$phylo);
 	system ("rm $name\_CAFE_sco_file.txt") if (defined$annotation);
 	system ("rm $name\_CAFE_seg_clus_out.txt");
 	system ("rm $name\_CAFE_table.txt") if (defined$annotation);
-	system ("rm $infile\_CAFE.fna") if (defined$gbk);	
+	system ("rm $infile\_CAFE.fna") if (defined$gbk);
 	system ("rm $name\_CAFE_enrichment.txt");
 	system ("rm $name\_CAFE_full.xml") if ($visual==1);
 	system ("rm $name\_CAFE_marker.xml") if ($visual==1);
 	system ("rm $name\_CAFE1_0.xml") if ($visual==1);
 	system ("rm $name\_CAFE1_1.xml") if ($visual==1);
 	system ("rm $name\_CAFE_feature_table") if ($visual==1);
-	system ("rm $name\_CAFE_full_feature_table") if ($visual==1);	
+	system ("rm $name\_CAFE_full_feature_table") if ($visual==1);
 	system ("rm $name\_CAFE_label") if ($visual==1);
 	#system ("rm $name\_CAFE_CGViewout1") if ($visual==1);
 	system ("rm $name\_CAFE_CGViewout") if ($visual==1);
-	system ("rm CAFE_temp")	
+	system ("rm CAFE_temp")
 }
 
 
@@ -966,15 +966,15 @@ sub usage {
 			my $def = defined($_->{DEFAULT}) ? " (default '$_->{DEFAULT}')" : "";
 			$def = ($def ? ' (default OFF)' : '(default ON)') if $_->{OPT} =~ m/!$/;
 			my $opt = $_->{OPT};
-			$opt =~ s/!$//; 
-			$opt =~ s/=s$/ [X]/; 
+			$opt =~ s/!$//;
+			$opt =~ s/=s$/ [X]/;
 			$opt =~ s/=i$/ [N]/;
 			$opt =~ s/=f$/ [n.n]/;
 			printf STDERR "  --%-15s %s%s\n", $opt, $_->{description}, $def;
 		}
 		else {
 			print STDERR "$_\n";
-		}      
+		}
 	}
  	print STDERR "\nUsage:\n  $0 [options] -gbk genome.gbk\n\n  $0 [options] -annot genome.fna\n\t\tOR\n";
 
@@ -998,7 +998,7 @@ sub Thres {
 				print "Thresholds should be in range 0 to 1\n";
 				exit;
 			}
-			else {		
+			else {
 				print "Thresholds are $seg $clus1 $clus2\n";
 			}
 		}
@@ -1006,10 +1006,10 @@ sub Thres {
 			print "Input segmentation contiguous clustering and non-contiguous clustering thresholds\n";
 			exit;
 		}
-		
+
 	}
 	else {
-		
+
 		print "Input segmentation contiguous clustering and non-contiguous clustering thresholds\n";
 		exit;
 	}
@@ -1029,16 +1029,16 @@ sub visual {
 
 sub gbk {
 	$gbk=1;
-	
+
 	#print $ARGV[0];
-	
+
 	$infile=shift(@ARGV);
 	#print "$infile\n";
 	if (defined $nce){exit;}
 	unless (-e $infile) {
 		print "Sequence file does not exist\n";
 		exit;
-	} 
+	}
 	$nce=1;
 	my $seqio = Bio::SeqIO->new(
 		                        -file   =>  $infile,
@@ -1050,14 +1050,14 @@ sub gbk {
 	my %tags = ();
 	$gene_no=1;
 	while (my $seq = $seqio->next_seq()) {
-	
+
 		my $header1 = $seq->desc() || 'unknown' . " - 1.." . $seq->length();
-		$sequence=$seq->seq;	
+		$sequence=$seq->seq;
 		print FNA ">$header1 ", "\n", $sequence;
 
 		my @CDS = $seq->get_SeqFeatures('CDS');
 		my $featcnt = 0;
-		
+
 		print $PTT $header1 . "\n";
 		print $PTT scalar(@CDS) . " proteins" . "\n";
 		print $PTT "Location\tStrand\tLength\tPID\tGene\tSynonym\tCode\tCOG\tProduct\n";
@@ -1082,7 +1082,7 @@ sub gbk {
 			my $cog = '-';
 			my @description = $feature->get_tag_values('product');
 			my @protein =$feature->get_tag_values('translation');
-			
+
 			if ($strand > 0) {
 			    $strand = '+';
 			} elsif ($strand < 0) {
@@ -1094,7 +1094,7 @@ sub gbk {
 			$gene_no++;
 			#my $protein= $feature->seq() ;
 			#print "$protein\n"
-			
+
 		}
 
 	}
@@ -1160,16 +1160,16 @@ if ($phylo==0){
 		$phcount++;
 		$phcum_count++;
 		$pi++;
-	
-		
+
+
 	}
 
 	for ($i=0; $i<$bf; $i++){
 		if ($blsub[$i]=~m/\[(.*)\]/){ #get blast subject names
 			$blastname[$i]=$1;
-		
+
 		}
-	
+
 	}
 
 	for ($i=0; $i<$bf; $i++){
@@ -1210,15 +1210,15 @@ if ($phylo==0){
 		if (!defined $expect ) {$pc=1;}
 		else {$pc=$actual_count/$expect;}
 		$phv=0;
-		
+
 		if ($pc>=0.5){
 			$phyvalue[$phv++]=0; #typical phyletic spread
 			$value=0;
 		}
 		else {
 			$phyvalue[$phv++]=1;
-			$value=0; #atypical phyletic pattern			
-		} 
+			$value=0; #atypical phyletic pattern
+		}
 		if (!defined $expect ) {
 			print BLOUT "$_\t0\t$actual_count\t$phash{$_}\t$value\n";
 		}
@@ -1227,9 +1227,9 @@ if ($phylo==0){
 		}
 		$spcount=0;
 		@all_strains='';
-		
+
 	}
-	
+
 	return @phyvalue;
 	#exit;
 }
@@ -1253,11 +1253,11 @@ sub getOptions {
 	{OPT=>"genus", VAR=>\&genus, description=>"Write genus of the query genome"},
 	'Output:',
 	{OPT=>"out", VAR=>\$outfile, description=>"Output file name"},
-	{OPT=>"verbose", VAR=>\&verb, description=>"print on screen"},	
+	{OPT=>"verbose", VAR=>\&verb, description=>"print on screen"},
 	{OPT=>"expert", VAR=>\&expert, description=>"keep temporary files for user analyses"},
 	{OPT=>"visual", VAR=>\&visual, description=>"Make map of genomic islands (Requires CGView)"},
-	
-	
+
+
 	);
 	(!@ARGV) && (usage());
 	&GetOptions(map {$_->{OPT}, $_->{VAR}} grep { ref } @Options) || usage();
