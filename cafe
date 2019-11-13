@@ -397,7 +397,7 @@ else {
 	system("./cafe.out $name\_CAFE_1 0.8 0.99999 0.999 $verb");
 } 	
 
-$cafetemp = substr(abs_path($0), 0, -5)."/cafe_temp";
+$cafetemp = substr(Cwd::abs_path($0), 0, -5)."/cafe_temp";
 opendir $currdir, Cwd::cwd();
 @dirfiles = readdir $currdir;
 $cpcafetemp = 1;
